@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrong turn | JB Automates</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232F5D46'/%3E%3Ctext x='30' y='42' font-family='Figtree,Segoe UI,Arial,sans-serif' font-weight='800' font-size='26' text-anchor='middle' fill='%23F6F4EE'%3EJB%3C/text%3E%3Ccircle cx='51' cy='13' r='5' fill='%23C29A5E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* The "page not found" page. Same look as the main page: off-white, charcoal, forest green, a brass time stamp. */
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; display: grid; place-items: center; padding: 24px;
+  background: linear-gradient(180deg, #F3F5F4, #F6F4EF); color: #262B2A;
+  font: 400 18px/1.6 "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+main { max-width: 30em; display: grid; gap: 20px; justify-items: start; }
+.time { display: inline-flex; align-items: center; gap: 11px; margin: 0; font: 500 14px/1 "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; color: #82633A; letter-spacing: 0.04em; }
+.time::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 34% 32%, #E5CC98 0 18%, #B48F59 52%, #7A5B31 100%); box-shadow: 0 0 0 3px rgba(180, 143, 89, 0.15); }
+h1 { margin: 0; font-size: clamp(38px, 8vw, 60px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; }
+p { margin: 0; color: #4F5754; }
+a.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 14px 24px; border-radius: 14px; background: #2F5D46; color: #F7F6F1; font-weight: 600; text-decoration: none; }
+a.btn:hover { background: #244A37; }
+a.btn:focus-visible { outline: 3px solid #B48F59; outline-offset: 3px; }
+svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<main>
+  <p class="time">Wrong address</p>
+  <h1>Wrong turn.</h1>
+  <p>There's nothing at this address. Happens to the best of us with a new customer's driveway, too.</p>
+  <a class="btn" href="/">Back to JB Automates <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</main>
+</body>
+</html>
