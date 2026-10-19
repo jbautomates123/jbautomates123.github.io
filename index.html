@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JB Automates | Office apps and websites for landscaping crews</title>
-<meta name="description" content="Simple office apps and websites for landscaping crews, built by a guy who works on one. Missed calls, the truck list, rain days and getting found on Google. Built fast. Works like a truck.">
+<title>Websites and office apps for NH landscapers | JB Automates</title>
+<meta name="description" content="For NH landscaping crews, from Manchester and Nashua to Concord and Portsmouth: a website that gets you found and a simple app that logs every call and job.">
 <meta name="theme-color" content="#F3F5F4">
 <!-- Link preview card (what shows when you text or post the link). If the web address changes, change the
      jbautomates123.github.io addresses below (canonical, og:url and og:image). -->
@@ -1099,15 +1099,20 @@ var SETTINGS = {
   if (S.PHONE) wireCopy('copyPhone', 'phoneText', S.PHONE);
 
   // ---------- Info for Google ----------
-  // A small hidden note that tells Google this is a business, with its name, phone and email (taken from SETTINGS).
+  // A small hidden note that tells Google this is a business, with its name, phone and email (taken from SETTINGS),
+  // that it serves all of New Hampshire (no street address on purpose: Jack comes to you), and the site's name.
   try {
-    var canon = document.querySelector('link[rel="canonical"]');
-    var info = { '@context': 'https://schema.org', '@type': 'ProfessionalService', name: S.BUSINESS_NAME,
-      description: 'Simple office apps and websites for landscaping crews.', slogan: S.MOTTO,
-      email: S.EMAIL, url: canon ? canon.href : location.href };
+    var canon = document.querySelector('link[rel="canonical"]'), card = document.querySelector('meta[property="og:image"]');
+    var home = canon ? canon.href : location.href;
+    var info = { '@type': 'ProfessionalService', '@id': home + '#business', name: S.BUSINESS_NAME,
+      description: 'Websites and simple office apps for landscaping crews in New Hampshire.', slogan: S.MOTTO,
+      email: S.EMAIL, url: home, areaServed: { '@type': 'State', name: 'New Hampshire' } };
+    if (card) info.image = card.content;
     if (S.PHONE) info.telephone = '+' + digits;
     if (S.YOUR_NAME) info.founder = { '@type': 'Person', name: S.YOUR_NAME };
-    var ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.textContent = JSON.stringify(info);
+    var site = { '@type': 'WebSite', name: S.BUSINESS_NAME, url: home, publisher: { '@id': home + '#business' } };
+    var ld = document.createElement('script'); ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': [info, site] });
     document.head.appendChild(ld);
   } catch (e) {}
 
