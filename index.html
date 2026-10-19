@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Websites and office apps for NH landscapers | JB Automates</title>
 <meta name="description" content="For NH landscaping crews, from Manchester and Nashua to Concord and Portsmouth: a website that gets you found and a simple app that logs every call and job.">
-<meta name="theme-color" content="#F3F5F4">
+<meta name="theme-color" content="#EFF5F4">
 <!-- Link preview card (what shows when you text or post the link). If the web address changes, change the
      jbautomates123.github.io addresses below (canonical, og:url and og:image). -->
 <link rel="canonical" href="https://jbautomates123.github.io/">
@@ -34,11 +34,14 @@
 :root {
   color-scheme: light;
   /* the sun */
-  --morning: #F3F5F4;
-  --midday: #F5F5F2;
-  --afternoon: #F6F4EF;
-  --late: #F5F2EB;
-  --evening: #F2EEE6;
+  /* Oct 19: the day's colors shift a little more (cooler morning, warmer afternoon). Kept light enough
+     that the gray text stays at 4.5:1 contrast or better on every one of them. */
+  --morning: #EFF5F4;
+  --midday: #F6F6F0;
+  --afternoon: #F8F3EA;
+  --late: #F7F0E4;
+  --evening: #F4ECDF;
+  --golden: #F1E8DA;    /* 5:30 p.m.: the light starts going, so the fade to dusk begins here */
   --dusk: #1D2220;
   /* ink (charcoal) */
   --ink: #262B2A;
@@ -329,7 +332,9 @@ body.at-dusk .clock { background: rgba(255, 255, 255, 0.04); border-color: rgba(
 .item-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 
 /* ---------- Afternoon sections ---------- */
-.rest { --ring: var(--late); background: linear-gradient(180deg, var(--late) 0%, var(--evening) 100%); }
+.rest { --ring: var(--late); background: linear-gradient(180deg, var(--late) 0%, var(--evening) 62%, var(--golden) 100%); }
+#about { --ring: var(--evening); }
+#questions { --ring: var(--golden); }
 .block { padding-block: clamp(56px, 9vh, 104px); }
 .block + .block { padding-top: 0; }
 .sec-head { display: grid; gap: 16px; align-content: start; justify-items: start; margin-bottom: 40px; }
@@ -389,8 +394,12 @@ body.at-dusk .clock { background: rgba(255, 255, 255, 0.04); border-color: rgba(
 
 /* ---------- Dusk ---------- */
 .fade {
-  height: clamp(220px, 36vh, 380px);
-  background: linear-gradient(180deg, var(--evening) 0%, #EAE6DE 16%, #CFCCC5 32%, #A3A49F 48%, #6E736F 64%, #424845 80%, var(--dusk) 100%);
+  /* Oct 19: the fade starts in the empty space under the last question (it overlaps that space instead of adding to the
+     page, so the page is the same length) and eases in slowly from the 5:30 light, so the dark comes on gently. */
+  --overlap: clamp(48px, 8vh, 96px);
+  margin-top: calc(-1 * var(--overlap));   /* not positioned on purpose, so the timeline line and the truck still draw on top */
+  height: calc(clamp(220px, 36vh, 380px) + var(--overlap));
+  background: linear-gradient(180deg, var(--golden) 0%, #EDE4D6 10%, #E3DACD 20%, #D2CBC0 30%, #BAB5AC 40%, #9C9A94 50%, #7B7D79 60%, #5D615E 70%, #434846 80%, #2D3331 90%, var(--dusk) 100%);
 }
 /* "Done for the day" fills at least one screen, so the page always ends on a fully dark evening screen (footer at the bottom) */
 .dusk {
@@ -524,6 +533,8 @@ main { position: relative; }
 @media (prefers-reduced-motion: reduce) {
   .btn, .btn .arrow, .faq .pm, .stage .screen img, .copy, .top, .top .wrap, .clock, .time::before, .rise.in { transition: none !important; }
   .rig, .rig *, .side { transition: none !important; animation: none !important; }
+  /* Oct 19: with motion off, the wipers stop mid-swipe (so they read as working) instead of lying flat */
+  .rig.raining .wipers path { transform: rotate(-31deg); }
   .tl .time.now::before { animation: none; }
   .stage .screen img, .stage .screen img.past { transform: none; }
   .rise { opacity: 1; transform: none; }
@@ -1361,12 +1372,34 @@ var SETTINGS = {
     }
 
     // rain across the whole screen, heaviest over the road (only drawn while it's raining).
-    // With animations turned off on the computer, it's drawn once and stays still.
+    // With animations turned off on the computer, it's drawn once and stays still. Oct 19: the still rain
+    // stays off the words (still streaks across text looked like scratches): only short, lighter streaks
+    // over the road and in the empty space beside the words. The gray sky and wet road still show.
+    function stillRainZones() {
+      var road = M.railX + M.mainLeft, first = document.querySelector('.moment');
+      var left = first ? first.getBoundingClientRect().left - 8 : road + 18;
+      var wrapEl = first ? first.closest('.wrap') : null, right = wrapEl ? wrapEl.getBoundingClientRect().right + 8 : RW;
+      var zones = [[Math.max(0, road - 26), Math.max(Math.max(0, road - 26) + 1, Math.min(left, road + 22))]];
+      if (left - road > 60) zones.push([road + 30, left]);   // a wide gap between the road and the words (big screens)
+      if (road - 26 > 40) zones.push([0, road - 34]);        // space left of the road
+      if (RW - right > 40) zones.push([right, RW]);          // space right of the words
+      return zones;
+    }
     function sizeRain() {
       dpr = Math.min(2, window.devicePixelRatio || 1);
       RW = rainCv.offsetWidth; RH = window.innerHeight;
       rainCv.width = Math.round(RW * dpr); rainCv.height = Math.round(RH * dpr);
       drops = []; st.rainDrawn = false; // resizing clears the canvas, so the still rain gets drawn again
+      if (reduce) {
+        var zones = stillRainZones(), span = zones.reduce(function (s, z) { return s + (z[1] - z[0]); }, 0);
+        var count = Math.round(Math.min(110, 18 + span * 0.22));
+        for (var k = 0; k < count; k++) {
+          var pick = Math.random() * span, z = zones[0];
+          for (var q = 0; q < zones.length; q++) { var w = zones[q][1] - zones[q][0]; if (pick < w) { z = zones[q]; break; } pick -= w; }
+          drops.push({ near: false, x: z[0] + Math.random() * (z[1] - z[0]), y: Math.random() * RH, l: 9 + Math.random() * 8, s: 0, w: 1 + Math.random() * 0.6 });
+        }
+        return;
+      }
       var road = M.railX + M.mainLeft, n = Math.round(Math.min(RW, 1600) * 0.16) + 60;
       for (var i = 0; i < n; i++) {
         var near = i < 60; // 60 drops bunched over the road, the rest spread across the screen
@@ -1380,7 +1413,7 @@ var SETTINGS = {
       if (api.rain <= 0.02) return;
       var dt = st.rainLast ? clamp((t - st.rainLast) / 1000, 0, 0.05) : 0.016; st.rainLast = t;
       if (reduce) dt = 0;
-      ctx.strokeStyle = 'rgba(62, 86, 102, 0.62)'; ctx.lineCap = 'round';
+      ctx.strokeStyle = reduce ? 'rgba(62, 86, 102, 0.42)' : 'rgba(62, 86, 102, 0.62)'; ctx.lineCap = 'round';
       drops.forEach(function (d) {
         d.y += d.s * dt; d.x -= d.s * dt * 0.1;
         if (d.y - d.l > RH) { d.y = -Math.random() * 40; d.x = d.near ? M.railX + M.mainLeft + 20 + (Math.random() - 0.5) * 140 : Math.random() * (RW + 30); }
